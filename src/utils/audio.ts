@@ -1,14 +1,20 @@
 // Audio playback for spoken numbers.
 //
-// Primary backend: Google Translate TTS via a shared <audio> element (same as
-// the Obsidian plugin). Browsers may block that endpoint (referer checks,
-// network policies), so on any playback error we fall back to the built-in
-// Web Speech API, which works offline in every modern browser.
+// Two backends:
+// - Google Translate TTS via a shared <audio> element (same as the Obsidian
+//   plugin). Browsers may block that endpoint (referer checks, network
+//   policies), so on any playback error we fall back to the Web Speech API.
+// - Browser/device voices via the Web Speech API, selected explicitly with a
+//   "browser:<voiceURI>" voice id. These work offline and vary by platform
+//   (Google voices in Chrome, Microsoft neural voices in Edge, Apple voices
+//   on macOS/iOS, etc.).
 
 export interface SpeechHandle {
   done: Promise<void>;
   cancel: () => void;
 }
+
+export const BROWSER_VOICE_PREFIX = 'browser:';
 
 const SYNTH_LANGS: Record<string, string> = {
   es: 'es-ES',
@@ -23,8 +29,39 @@ let activeCancel: (() => void) | null = null;
 
 export const RESOLVED_SPEECH: SpeechHandle = { done: Promise.resolve(), cancel: () => {} };
 
+export function isBrowserVoiceId(voiceId: string): boolean {
+  return voiceId.startsWith(BROWSER_VOICE_PREFIX);
+}
+
+export function browserVoiceId(voice: SpeechSynthesisVoice): string {
+  return `${BROWSER_VOICE_PREFIX}${voice.voiceURI}`;
+}
+
+function synthAvailable(): boolean {
+  return 'speechSynthesis' in window;
+}
+
+function allSynthVoices(): SpeechSynthesisVoice[] {
+  return synthAvailable() ? window.speechSynthesis.getVoices() : [];
+}
+
+/** Spanish voices installed in this browser/device, Spanish-Spanish first. */
+export function getBrowserSpanishVoices(): SpeechSynthesisVoice[] {
+  return allSynthVoices()
+    .filter(voice => voice.lang.replace('_', '-').toLowerCase().startsWith('es'))
+    .sort((a, b) => a.lang.localeCompare(b.lang) || a.name.localeCompare(b.name));
+}
+
+function findBrowserVoice(voiceId: string): SpeechSynthesisVoice | null {
+  const uri = voiceId.slice(BROWSER_VOICE_PREFIX.length);
+  const voices = allSynthVoices();
+  return voices.find(voice => voice.voiceURI === uri)
+    ?? voices.find(voice => voice.name === uri)
+    ?? null;
+}
+
 function pickSynthVoice(lang: string): SpeechSynthesisVoice | null {
-  const voices = window.speechSynthesis.getVoices();
+  const voices = allSynthVoices();
   const normalized = lang.toLowerCase();
   const exact = voices.find(v => v.lang.replace('_', '-').toLowerCase() === normalized);
   if (exact) return exact;
@@ -34,6 +71,10 @@ function pickSynthVoice(lang: string): SpeechSynthesisVoice | null {
 
 export function speak(text: string, voiceId: string): SpeechHandle {
   stopSpeaking();
+
+  if (isBrowserVoiceId(voiceId)) {
+    return speakWithSynth(text, findBrowserVoice(voiceId), 'es-ES');
+  }
 
   let settled = false;
   let usingSynth = false;
@@ -58,13 +99,13 @@ export function speak(text: string, voiceId: string): SpeechHandle {
   const cancel = () => {
     if (settled) return;
     audio.pause();
-    if (usingSynth && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+    if (usingSynth && synthAvailable()) window.speechSynthesis.cancel();
     finish();
   };
 
   const fallbackToSynth = () => {
     if (settled) return;
-    if (!('speechSynthesis' in window)) {
+    if (!synthAvailable()) {
       finish();
       return;
     }
@@ -97,16 +138,71 @@ export function speak(text: string, voiceId: string): SpeechHandle {
   return { done, cancel };
 }
 
+function speakWithSynth(text: string, voice: SpeechSynthesisVoice | null, fallbackLang: string): SpeechHandle {
+  if (!synthAvailable()) {
+    return RESOLVED_SPEECH;
+  }
+
+  let settled = false;
+  let timeoutId: number | null = null;
+  let resolveDone!: () => void;
+  const done = new Promise<void>((resolve) => { resolveDone = resolve; });
+
+  const finish = () => {
+    if (settled) return;
+    settled = true;
+    if (timeoutId !== null) window.clearTimeout(timeoutId);
+    if (activeCancel === cancel) activeCancel = null;
+    resolveDone();
+  };
+
+  const cancel = () => {
+    if (settled) return;
+    window.speechSynthesis.cancel();
+    finish();
+  };
+
+  activeCancel = cancel;
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  if (voice) {
+    utterance.voice = voice;
+    utterance.lang = voice.lang;
+  } else {
+    utterance.lang = fallbackLang;
+    const picked = pickSynthVoice(fallbackLang);
+    if (picked) utterance.voice = picked;
+  }
+  utterance.onend = finish;
+  utterance.onerror = finish;
+  timeoutId = window.setTimeout(finish, PLAYBACK_TIMEOUT_MS);
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+
+  return { done, cancel };
+}
+
 export function stopSpeaking() {
   if (activeCancel) activeCancel();
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  if (synthAvailable()) window.speechSynthesis.cancel();
 }
 
 // Some browsers load the synthesis voice list asynchronously; touching it
 // early makes voices available by the time the user starts a session.
+// Callers can subscribe to hear when the list arrives (e.g. to refresh a
+// voice picker).
+const voicesChangedCallbacks: Array<() => void> = [];
+
+export function onVoicesChanged(callback: () => void) {
+  voicesChangedCallbacks.push(callback);
+}
+
 export function warmUpVoices() {
-  if ('speechSynthesis' in window) {
+  if (synthAvailable()) {
     window.speechSynthesis.getVoices();
-    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => {
+      window.speechSynthesis.getVoices();
+      voicesChangedCallbacks.forEach((callback) => callback());
+    };
   }
 }

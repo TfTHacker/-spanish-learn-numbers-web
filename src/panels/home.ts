@@ -3,6 +3,8 @@
 import { App } from '../app';
 import { VOICE_OPTIONS } from '../types';
 import { APP_ICONS, iconWithLabel } from '../ui/icons';
+import { browserVoiceId, getBrowserSpanishVoices, isBrowserVoiceId, onVoicesChanged } from '../utils/audio';
+import { escapeHtml } from '../utils/html';
 
 export class HomePanel {
   private app: App;
@@ -41,6 +43,37 @@ export class HomePanel {
     }
   }
 
+  private voiceOptionsMarkup(): string {
+    const selected = this.app.settings.voiceId;
+    const browserVoices = getBrowserSpanishVoices();
+    const browserIds = new Set(browserVoices.map((voice) => browserVoiceId(voice)));
+
+    const googleGroup = `
+      <optgroup label="Google Translate (online)">
+        ${VOICE_OPTIONS.map((voice) => `
+          <option value="${voice.id}" ${voice.id === selected ? 'selected' : ''}>${voice.name}</option>
+        `).join('')}
+      </optgroup>
+    `;
+
+    const browserGroup = browserVoices.length > 0 ? `
+      <optgroup label="This browser / device (offline)">
+        ${browserVoices.map((voice) => {
+          const id = browserVoiceId(voice);
+          return `<option value="${escapeHtml(id)}" ${id === selected ? 'selected' : ''}>${escapeHtml(`${voice.name} — ${voice.lang}`)}</option>`;
+        }).join('')}
+      </optgroup>
+    ` : '';
+
+    // A previously chosen browser voice that isn't loaded (yet) still needs
+    // an entry, otherwise the select silently jumps to the first option.
+    const missingSelected = isBrowserVoiceId(selected) && !browserIds.has(selected)
+      ? `<option value="${escapeHtml(selected)}" selected>Saved browser voice</option>`
+      : '';
+
+    return googleGroup + browserGroup + missingSelected;
+  }
+
   render() {
     this.container.innerHTML = `
       <div class="lsn-wrap">
@@ -58,9 +91,7 @@ export class HomePanel {
         <div class="lsn-dashboard-toolbar lsn-mt-16">
           <label class="lsn-text-muted-sm" for="voice-select">Voice</label>
           <select id="voice-select" class="lsn-input lsn-voice-select" aria-label="Spanish voice">
-            ${VOICE_OPTIONS.map((voice) => `
-              <option value="${voice.id}" ${voice.id === this.app.settings.voiceId ? 'selected' : ''}>${voice.name}</option>
-            `).join('')}
+            ${this.voiceOptionsMarkup()}
           </select>
           ${this.getAudioToggleMarkup()}
         </div>
@@ -83,9 +114,21 @@ export class HomePanel {
       this.app.navigate('number-to-spanish');
     });
 
-    this.container.querySelector('#voice-select')?.addEventListener('change', (e) => {
-      this.app.settings.voiceId = (e.target as HTMLSelectElement).value;
+    const voiceSelect = this.container.querySelector('#voice-select') as HTMLSelectElement | null;
+
+    voiceSelect?.addEventListener('change', () => {
+      this.app.settings.voiceId = voiceSelect.value;
       this.app.saveSettings();
+      // Preview so the user hears the chosen voice immediately.
+      this.app.playAudio('Hola, vamos a practicar los números.', undefined, true);
+    });
+
+    // Browser voice lists often load asynchronously; refresh the picker when
+    // they arrive (stale callbacks from earlier renders no-op via isConnected).
+    onVoicesChanged(() => {
+      if (voiceSelect?.isConnected) {
+        voiceSelect.innerHTML = this.voiceOptionsMarkup();
+      }
     });
 
     this.container.querySelector('#audio-toggle')?.addEventListener('click', () => {
