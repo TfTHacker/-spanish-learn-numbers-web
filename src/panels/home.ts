@@ -81,7 +81,6 @@ export class HomePanel {
       <div class="lsn-wrap">
         <div class="lsn-text-center lsn-mb-24">
           <h1 class="lsn-title-lg">Learn Spanish Numbers</h1>
-          <p class="lsn-subtitle">Flashcards and listening practice from 0 to 1 trillion.</p>
         </div>
 
         <div class="lsn-home-actions lsn-mb-12">
