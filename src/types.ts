@@ -69,7 +69,7 @@ export interface ListenLearnState {
 
 export const DEFAULT_SETTINGS: AppSettings = {
   audioEnabled: true,
-  voiceId: 'es',
+  voiceId: 'auto',
   lastCramRanges: '',
   cramRecentConfigs: [],
   listenLearnSettings: { direction: 'es-en', inputText: '', shuffled: false, autoRepeatRange: false, recentConfigs: [] },

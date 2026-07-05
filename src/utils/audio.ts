@@ -29,6 +29,9 @@ const PLAYBACK_TIMEOUT_MS = 15000;
 let sharedAudio: HTMLAudioElement | null = null;
 let activeCancel: (() => void) | null = null;
 let googleFallbackNotified = false;
+// Once a Google Translate request fails, skip the endpoint for the rest of
+// the session instead of paying the failed-request delay on every clip.
+let googleUnavailable = false;
 
 export const RESOLVED_SPEECH: SpeechHandle = { done: Promise.resolve(), cancel: () => {} };
 
@@ -79,6 +82,15 @@ export function speak(text: string, voiceId: string): SpeechHandle {
     return speakWithSynth(text, findBrowserVoice(voiceId), 'es-ES');
   }
 
+  if (voiceId === 'auto') {
+    return speakWithSynth(text, pickSynthVoice('es-ES'), 'es-ES');
+  }
+
+  if (googleUnavailable) {
+    const lang = SYNTH_LANGS[voiceId] ?? voiceId;
+    return speakWithSynth(text, pickSynthVoice(lang), lang);
+  }
+
   let settled = false;
   let usingSynth = false;
   let timeoutId: number | null = null;
@@ -112,6 +124,7 @@ export function speak(text: string, voiceId: string): SpeechHandle {
       finish();
       return;
     }
+    googleUnavailable = true;
     if (!googleFallbackNotified) {
       googleFallbackNotified = true;
       toast('Google Translate voice unavailable — using a browser voice instead.');

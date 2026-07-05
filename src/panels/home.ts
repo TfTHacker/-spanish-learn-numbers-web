@@ -48,8 +48,10 @@ export class HomePanel {
     const browserVoices = getBrowserSpanishVoices();
     const browserIds = new Set(browserVoices.map((voice) => browserVoiceId(voice)));
 
+    const autoOption = `<option value="auto" ${selected === 'auto' ? 'selected' : ''}>Automatic — best Spanish voice on this device</option>`;
+
     const googleGroup = `
-      <optgroup label="Google Translate (online)">
+      <optgroup label="Google Translate (online — may not work in all browsers)">
         ${VOICE_OPTIONS.map((voice) => `
           <option value="${voice.id}" ${voice.id === selected ? 'selected' : ''}>${voice.name}</option>
         `).join('')}
@@ -71,7 +73,7 @@ export class HomePanel {
       ? `<option value="${escapeHtml(selected)}" selected>Saved browser voice</option>`
       : '';
 
-    return googleGroup + browserGroup + missingSelected;
+    return autoOption + browserGroup + googleGroup + missingSelected;
   }
 
   render() {

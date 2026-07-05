@@ -20,10 +20,11 @@ Type any number from 0 to 1,000,000,000,000 and see it written in Spanish with a
 ### Voices
 Choose your voice on the home screen. The picker shows where each voice comes from:
 
-- **Google Translate (online)** — the Spain and Mexico voices from Google Translate's TTS service.
+- **Automatic (default)** — the best Spanish voice available on your device.
 - **This browser / device (offline)** — every Spanish voice installed on your system, which varies by platform: Microsoft neural voices in Edge (excellent quality), Google voices in Chrome, Apple voices on macOS/iOS, Android's Google TTS voices.
+- **Google Translate (online)** — the Spain and Mexico voices from Google Translate's unofficial TTS endpoint. Google blocks this endpoint in most browsers; if it fails, the app tells you and falls back to a browser voice automatically.
 
-Changing the voice plays a short preview. If the Google Translate endpoint is ever unavailable, playback automatically falls back to a browser voice, so audio keeps working.
+Changing the voice plays a short preview so you can compare.
 
 ## Development
 
