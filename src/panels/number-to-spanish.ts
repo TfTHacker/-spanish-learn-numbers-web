@@ -3,6 +3,7 @@
 import { App } from '../app';
 import { APP_ICONS, iconOnly } from '../ui/icons';
 import { toast } from '../ui/toast';
+import { bindSpeedControl, speedControlMarkup } from '../ui/speed-control';
 import { getSpanishNumberBreakdown, numberToSpanish } from '../utils/numbers';
 
 export class NumberToSpanishPanel {
@@ -112,6 +113,7 @@ export class NumberToSpanishPanel {
               <button id="btn-speak-spanish" class="lsn-btn-purple lsn-number-to-spanish-speak" disabled aria-label="Play audio">${iconOnly(APP_ICONS.audio)}</button>
             </div>
           </div>
+          ${speedControlMarkup(this.app.settings.speechRate)}
           <div id="number-breakdown" class="lsn-number-breakdown lsn-number-breakdown-pending"></div>
         </div>
         <div class="lsn-footer-actions">
@@ -122,6 +124,8 @@ export class NumberToSpanishPanel {
     `;
 
     const inputEl = this.container.querySelector('#num-input') as HTMLInputElement;
+
+    bindSpeedControl(this.container, this.app);
 
     this.container.querySelector('#btn-home')?.addEventListener('click', () => {
       this.app.navigate('home');

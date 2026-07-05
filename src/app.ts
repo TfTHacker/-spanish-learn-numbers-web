@@ -163,7 +163,7 @@ export class App {
     if (!this.settings.audioEnabled && !forcePlay) {
       return RESOLVED_SPEECH;
     }
-    return speak(text, voiceId || this.settings.voiceId);
+    return speak(text, voiceId || this.settings.voiceId, this.settings.speechRate);
   }
 
   stopAudio() {

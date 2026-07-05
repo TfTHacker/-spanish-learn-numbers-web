@@ -23,9 +23,16 @@ export const FOCUSED_RANGE_PRESETS: FocusedRangePreset[] = [
   { id: 'tricky', label: 'Tricky', description: 'Commonly confusing forms', ranges: Array.from(TRICKY_NUMBERS).join(', '), compactLabel: 'Tricky set' },
 ];
 
+export const SPEECH_RATE_OPTIONS = [
+  { value: 0.6, label: 'Slower' },
+  { value: 0.8, label: 'Slow' },
+  { value: 1, label: 'Normal' },
+];
+
 export interface AppSettings {
   audioEnabled: boolean;
   voiceId: string;
+  speechRate: number;
   lastCramRanges: string;
   cramRecentConfigs: CramRecentConfig[];
   listenLearnSettings: ListenLearnSettings;
@@ -65,6 +72,7 @@ export interface ListenLearnState {
 export const DEFAULT_SETTINGS: AppSettings = {
   audioEnabled: true,
   voiceId: 'auto',
+  speechRate: 1,
   lastCramRanges: '',
   cramRecentConfigs: [],
   listenLearnSettings: { direction: 'es-en', inputText: '', shuffled: false, autoRepeatRange: false, recentConfigs: [] },

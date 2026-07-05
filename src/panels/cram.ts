@@ -5,6 +5,7 @@ import { App } from '../app';
 import { FOCUSED_RANGE_PRESETS } from '../types';
 import { APP_ICONS, iconOnly, iconWithLabel } from '../ui/icons';
 import { toast } from '../ui/toast';
+import { bindSpeedControl, speedControlMarkup } from '../ui/speed-control';
 import { applyCramAgain, applyCramGood, buildCramSession, CramSessionState, restartCramSession } from '../utils/learning';
 import { numberToSpanish } from '../utils/numbers';
 import { escapeHtml } from '../utils/html';
@@ -231,6 +232,8 @@ export class CramPanel {
           </div>
         </div>
 
+        ${speedControlMarkup(this.app.settings.speechRate)}
+
         <div class="lsn-footer-actions">
           <div class="lsn-footer-actions-left">
             <button id="btn-back" class="lsn-home-btn-text">${iconWithLabel(APP_ICONS.back, 'Back')}</button>
@@ -240,6 +243,8 @@ export class CramPanel {
         </div>
       </div>
     `;
+
+    bindSpeedControl(this.container, this.app);
 
     this.container.querySelector('#btn-play-a')?.addEventListener('click', () => {
       this.app.playAudio(spanish, undefined, true);

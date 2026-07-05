@@ -6,6 +6,7 @@ import { App } from '../app';
 import { FOCUSED_RANGE_PRESETS } from '../types';
 import { APP_ICONS, iconOnly, iconWithLabel } from '../ui/icons';
 import { toast } from '../ui/toast';
+import { bindSpeedControl, speedControlMarkup } from '../ui/speed-control';
 import { getListenLearnDisplayState } from '../utils/learning';
 import { numberToSpanish, numberToWordsEnglish } from '../utils/numbers';
 import { escapeHtml } from '../utils/html';
@@ -509,6 +510,8 @@ export class ListenLearnPanel {
           <button id="next" class="lsn-btn-icon" aria-label="Next">${iconOnly(APP_ICONS.next)}</button>
         </div>
 
+        ${speedControlMarkup(this.app.settings.speechRate)}
+
         <div class="lsn-footer-actions">
           <div class="lsn-footer-actions-left">
             <button id="ll-back" class="lsn-home-btn-text">${iconWithLabel(APP_ICONS.back, 'Back')}</button>
@@ -525,6 +528,8 @@ export class ListenLearnPanel {
         </div>
       </div>
     `;
+
+    bindSpeedControl(this.container, this.app);
 
     // Show initial card and start the slideshow auto-advance
     playCard(state.currentIndex);

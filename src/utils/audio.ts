@@ -68,7 +68,7 @@ function pickSynthVoice(lang: string): SpeechSynthesisVoice | null {
   return voices.find(v => v.lang.toLowerCase().startsWith(prefix)) ?? null;
 }
 
-export function speak(text: string, voiceId: string): SpeechHandle {
+export function speak(text: string, voiceId: string, rate: number = 1): SpeechHandle {
   stopSpeaking();
 
   if (!synthAvailable()) {
@@ -109,6 +109,7 @@ export function speak(text: string, voiceId: string): SpeechHandle {
 
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = lang;
+  utterance.rate = rate;
   if (voice) utterance.voice = voice;
   utterance.onend = finish;
   utterance.onerror = finish;
