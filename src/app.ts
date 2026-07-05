@@ -17,12 +17,13 @@ import { HomePanel } from './panels/home';
 import { CramPanel } from './panels/cram';
 import { ListenLearnPanel } from './panels/listen-learn';
 import { NumberToSpanishPanel } from './panels/number-to-spanish';
+import { SettingsPanel } from './panels/settings';
 
 const STORAGE_KEY = 'spanish-learn-numbers';
 
 function parseHash(hash: string): PanelId {
   const value = hash.replace(/^#\/?/, '');
-  if (value === 'cram' || value === 'listen-learn' || value === 'number-to-spanish') {
+  if (value === 'cram' || value === 'listen-learn' || value === 'number-to-spanish' || value === 'settings') {
     return value;
   }
   return 'home';
@@ -135,6 +136,9 @@ export class App {
         break;
       case 'number-to-spanish':
         new NumberToSpanishPanel(this, this.root).render();
+        break;
+      case 'settings':
+        new SettingsPanel(this, this.root).render();
         break;
       default:
         new HomePanel(this, this.root).render();

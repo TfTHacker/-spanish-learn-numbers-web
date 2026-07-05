@@ -29,6 +29,12 @@ export const APP_ICONS = {
       <path d="M19.75 9.25 15.25 13.75"/>
     </svg>
   `,
+  settings: `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="3.25"/>
+      <path d="M12 4.5v2M12 17.5v2M19.5 12h-2M6.5 12h-2M17.3 6.7l-1.4 1.4M8.1 15.9l-1.4 1.4M17.3 17.3l-1.4-1.4M8.1 8.1 6.7 6.7"/>
+    </svg>
+  `,
   home: `
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M4.75 10.5 12 4.75l7.25 5.75"/>
