@@ -100,11 +100,10 @@ export class NumberToSpanishPanel {
       <div class="lsn-wrap">
         <h2 class="lsn-title-lg lsn-mb-24">Number to Spanish</h2>
         <div class="lsn-card-sm" style="overflow-wrap:break-word;">
-          <div class="lsn-mb-16">
+          <div class="lsn-mb-12">
             <label class="lsn-label">Number:</label>
             <input id="num-input" type="text" inputmode="numeric" placeholder="Enter a number (0-1 trillion)" class="lsn-input lsn-input-lg">
           </div>
-          <div class="lsn-example">Spanish text updates as you type. Press Enter or tap the speaker to hear it.</div>
           <div class="lsn-number-to-spanish-stage">
             <div id="number-to-spanish-result" class="lsn-number-to-spanish-result lsn-number-to-spanish-result-pending">
               <div id="number-to-spanish-text" class="lsn-number-to-spanish-text"></div>

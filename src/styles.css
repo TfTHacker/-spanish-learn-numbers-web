@@ -656,8 +656,7 @@ button {
   }
 
   .lsn-number-to-spanish-result {
-    padding: 16px;
-    min-height: 90px;
+    min-height: 34px;
   }
 
   .lsn-input-lg {
@@ -1059,12 +1058,9 @@ input.lsn-input-lg {
    =========================== */
 
 .lsn-number-to-spanish-result {
-  background: var(--background-secondary);
-  border-radius: 16px;
-  padding: 22px;
   text-align: center;
   word-wrap: break-word;
-  min-height: 110px;
+  min-height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1075,8 +1071,9 @@ input.lsn-input-lg {
 .lsn-number-to-spanish-stage {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 10px;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
 }
 
 .lsn-number-to-spanish-result-pending .lsn-number-to-spanish-text {
@@ -1084,13 +1081,13 @@ input.lsn-input-lg {
 }
 
 .lsn-number-to-spanish-controls {
-  min-height: 44px;
   display: flex;
   justify-content: center;
 }
 
 .lsn-number-to-spanish-speak {
-  min-width: 88px;
+  min-width: 0;
+  padding: 8px 16px;
 }
 
 .lsn-number-to-spanish-speak:disabled {
@@ -1109,8 +1106,8 @@ input.lsn-input-lg {
 }
 
 .lsn-number-breakdown {
-  margin-top: 16px;
-  padding-top: 16px;
+  margin-top: 10px;
+  padding-top: 10px;
   border-top: 1px solid var(--border);
 }
 
@@ -1121,20 +1118,20 @@ input.lsn-input-lg {
 .lsn-number-breakdown-title {
   font-size: 14px;
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .lsn-number-breakdown-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .lsn-number-breakdown-item {
   background: var(--background-primary);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 12px;
+  padding: 10px;
 }
 
 .lsn-number-breakdown-meta {
