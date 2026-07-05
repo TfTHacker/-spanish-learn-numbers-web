@@ -1,6 +1,6 @@
 # Learn Spanish Numbers (Web)
 
-**Live app: https://tfthacker.github.io/-spanish-learn-numbers-web/**
+**Live app: https://tfthacker.github.io/spanish-learn-numbers-web/**
 
 A self-contained web app for practicing Spanish numbers from 0 to 1 trillion — flashcards, listening drills, and instant number-to-Spanish conversion with audio. It runs entirely in your browser: nothing to install, no accounts, no data collection. Preferences are stored in your browser's local storage.
 
@@ -17,8 +17,10 @@ A guided audio slideshow. Choose Spanish → English, English → Spanish, or Sp
 ### Number to Spanish
 Type any number from 0 to 1,000,000,000,000 and see it written in Spanish with a scale-by-scale breakdown, and hear it pronounced.
 
-### Voices
-Audio uses the speech voices built into your browser and device (the Web Speech API), so it works offline and costs nothing. The home-screen picker offers **Automatic** (the best Spanish voice on your device, the default) or any specific installed Spanish voice. What's available varies by platform: Microsoft neural voices in Edge (excellent quality), Google voices in Chrome, Apple voices on macOS/iOS, Android's Google TTS voices. Changing the voice plays a short preview so you can compare.
+### Voices and speed
+Audio uses the speech voices built into your browser and device (the Web Speech API), so it works offline and costs nothing. The **Settings** page (gear icon on the home screen) offers **Automatic** (the best Spanish voice on your device, the default) or any specific installed Spanish voice, with sample numbers to preview each one. What's available varies by platform: Microsoft neural voices in Edge (excellent quality), Google voices in Chrome, Apple voices on macOS/iOS, Android's Google TTS voices.
+
+Each practice page also has its own **Speed** control (Slower / Slow / Normal), so pace can be adjusted in context without leaving what you're doing.
 
 ## Development
 
